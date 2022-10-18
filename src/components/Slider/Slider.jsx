@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import classes from './Slider.module.scss'
 import { ArrowBackIos } from '@mui/icons-material';
 import { ArrowForwardIos } from '@mui/icons-material';
 import styled from "styled-components"
-
+import { sliderItems } from '../../data';
 const Arrow = styled.div`
     width: 50px;
     height: 50px;
@@ -20,12 +20,21 @@ const Arrow = styled.div`
     margin: auto;
     cursor: pointer;
     opacity: 0.5;
+    z-index: 2;
+`
+
+const Wrapper = styled.div`
+    display: flex;
+    transition: all 1.5s ease;
+    height: 100%;
+    transform: translateX(${props=> props.slideIndex * -100}vw);
 `
 const Slide = styled.div`
     width: 100vw;
     height: 100vh;
     display: flex;
-    align-items:center;        
+    align-items:center;   
+    background-color: #${props => props.bg}     
 `;
 
 const ImgContainer = styled.div`
@@ -42,22 +51,35 @@ const InfoContainer = styled.div`
 `
 
 const Slider = () => {
+    const [slideIndex, setSlideIndex] = useState(0)
+    const handleClick = (direction) => {
+        if (direction === "left") {
+            setSlideIndex(slideIndex > 0 ? slideIndex - 1 : 2)
+        } else {
+            setSlideIndex(slideIndex < 2 ? slideIndex + 1 : 0)
+        }
+    }
     return (
         <div className={classes.container}>
-            <Arrow direction="left">
+            <Arrow direction="left" onClick={() => handleClick("left")}>
                 <ArrowBackIos />
             </Arrow>
-            <div className={classes.wrapper}>
-                <Slide>
+            <Wrapper slideIndex={slideIndex}>
+                {sliderItems.map(item => (
+                    <Slide bg={item.bg}>
+                        <ImgContainer>
+                            <Image src={item.img} />
+                        </ImgContainer>
 
-                
-               <ImgContainer>
-                <Image src="https://i.ibb.co/DG69bQ4/2.png"/>
-               </ImgContainer> 
-               </Slide>
-               <InfoContainer></InfoContainer>
-            </div>
-            <Arrow direction="right">
+                        <InfoContainer>
+                            <h1 className={classes.title}>{item.title}</h1>
+                            <p className={classes.desc}>{item.desc}</p>
+                            <button className={classes.btn}>SHOW NOW</button>
+                        </InfoContainer>
+                    </Slide>
+                ))}
+            </Wrapper>
+            <Arrow direction="right" onClick={() => handleClick("right")}>
                 <ArrowForwardIos />
             </Arrow>
         </div >
